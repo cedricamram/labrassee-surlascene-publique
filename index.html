@@ -170,10 +170,28 @@
     backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-inset), var(--glass-shadow);
-    padding: 28px 32px; border-radius: 20px;
-    display: grid; grid-template-columns: 130px 1fr auto; gap: 26px; align-items: center;
+    padding: 20px 28px; border-radius: 20px;
+    display: grid; grid-template-columns: 100px 90px 1fr auto; gap: 20px; align-items: center;
+    cursor: pointer; transition: all 0.3s ease;
   }
-  @media (max-width: 700px) { .show-carte { grid-template-columns: 100px 1fr; gap: 16px; padding: 20px; } .show-carte .heures { grid-column: 1 / -1; } }
+  .show-carte:hover { transform: translateY(-2px); border-color: var(--jaune-trame); box-shadow: var(--glass-inset), 0 12px 40px rgba(0, 0, 0, 0.55); }
+  .show-carte .photo-mini {
+    width: 90px; height: 90px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    background-color: var(--noir-pur);
+    border: 2px solid var(--jaune-trame);
+    flex-shrink: 0;
+  }
+  .show-carte .photo-mini.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--creme-fort); font-family: var(--font-titre);
+    font-size: 28px; letter-spacing: 1px;
+  }
+  @media (max-width: 700px) {
+    .show-carte { grid-template-columns: 80px 70px 1fr; gap: 14px; padding: 16px; }
+    .show-carte .photo-mini { width: 70px; height: 70px; }
+    .show-carte .heures { grid-column: 1 / -1; text-align: left; padding-top: 8px; border-top: 1px solid var(--glass-border); }
+  }
   .show-carte .date-bloc {
     text-align: center; padding: 14px;
     background: rgba(0,0,0,0.3); border: 1px solid var(--jaune-trame); border-radius: 14px;
@@ -282,6 +300,141 @@
   footer.public a { color: var(--blanc-doux); text-decoration: none; transition: color 0.2s; }
   footer.public a:hover { color: var(--jaune); }
 
+  /* Feature hero prochain artiste */
+  .feature-artiste {
+    background: linear-gradient(135deg, rgba(247,209,53,0.10), rgba(247,209,53,0.02));
+    backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--jaune-trame);
+    box-shadow: var(--glass-inset), 0 16px 60px rgba(0,0,0,0.5);
+    border-radius: 28px; padding: 36px; margin-bottom: 36px;
+    display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center;
+  }
+  @media (max-width: 800px) { .feature-artiste { grid-template-columns: 1fr; padding: 28px; gap: 22px; } }
+  .feature-artiste .photo-hd {
+    width: 100%; aspect-ratio: 1/1; border-radius: 22px;
+    background-size: cover; background-position: center;
+    background-color: var(--noir-pur);
+    border: 2px solid var(--jaune-trame);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .feature-artiste .photo-hd.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--creme-fort); font-family: var(--font-titre);
+    font-size: 86px; letter-spacing: 2px;
+    background: rgba(247,209,53,0.05);
+  }
+  .feature-artiste .infos h3.titre-artiste {
+    font-family: var(--font-titre); font-weight: 200;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1; letter-spacing: -1px;
+    color: var(--blanc); margin-bottom: 6px;
+  }
+  .feature-artiste .infos .surtitre-feat {
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 5px; font-size: 11px; color: var(--jaune); margin-bottom: 10px;
+  }
+  .feature-artiste .infos .genre {
+    font-family: var(--font-titre); color: var(--creme-fort);
+    text-transform: uppercase; letter-spacing: 3px; font-size: 12px; margin-bottom: 14px;
+  }
+  .feature-artiste .infos .when {
+    color: var(--blanc-doux); font-size: 16px; margin-bottom: 14px;
+  }
+  .feature-artiste .infos .when strong { color: var(--jaune); font-weight: 500; }
+  .feature-artiste .infos .bio {
+    color: var(--blanc-doux); font-size: 14px; line-height: 1.6; margin-bottom: 18px;
+  }
+  .feature-artiste .infos .liens-rapides {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .feature-artiste .infos .liens-rapides a {
+    color: var(--jaune); text-decoration: none;
+    font-family: var(--font-titre); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--jaune-clair); border: 1px solid var(--jaune-trame);
+    transition: all 0.2s ease;
+  }
+  .feature-artiste .infos .liens-rapides a:hover { background: var(--jaune); color: var(--sombre); }
+
+  /* Modal artiste */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(10,9,5,0.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    z-index: 100; display: none; align-items: flex-start; justify-content: center;
+    padding: 24px; overflow-y: auto;
+  }
+  .modal-backdrop.actif { display: flex; }
+  .modal-carte {
+    background: linear-gradient(180deg, rgba(31,28,15,0.95), rgba(16,15,9,0.95));
+    border: 1px solid var(--glass-border-fort); border-radius: 24px;
+    max-width: 800px; width: 100%;
+    box-shadow: var(--glass-inset), 0 32px 100px rgba(0,0,0,0.7);
+    overflow: hidden; position: relative;
+    margin: auto;
+  }
+  .modal-carte .ferme {
+    position: absolute; top: 14px; right: 14px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); color: var(--blanc);
+    border: 1px solid var(--glass-border); cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    z-index: 2; transition: all 0.2s;
+  }
+  .modal-carte .ferme:hover { background: var(--rouge, #ff6b6b); }
+  .modal-carte .hero-modal {
+    width: 100%; aspect-ratio: 16/7;
+    background-size: cover; background-position: center;
+    background-color: var(--noir-pur);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .modal-carte .corps-modal { padding: 28px 32px 32px; }
+  .modal-carte h3 {
+    font-family: var(--font-titre); font-weight: 200;
+    font-size: clamp(28px, 4vw, 40px); color: var(--blanc);
+    letter-spacing: -0.5px; margin-bottom: 8px;
+  }
+  .modal-carte .meta {
+    font-family: var(--font-titre); color: var(--creme-fort);
+    text-transform: uppercase; letter-spacing: 3px;
+    font-size: 11px; margin-bottom: 18px;
+  }
+  .modal-carte .show-info {
+    background: rgba(247,209,53,0.06); border-left: 3px solid var(--jaune);
+    padding: 14px 18px; border-radius: 8px; margin-bottom: 20px;
+    color: var(--blanc-doux); font-size: 14px;
+  }
+  .modal-carte .show-info strong { color: var(--jaune); }
+  .modal-carte .bio {
+    color: var(--blanc-doux); line-height: 1.7; margin-bottom: 22px; font-size: 15px;
+  }
+  .modal-carte .grille-liens {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 22px;
+  }
+  .modal-carte .grille-liens a {
+    color: var(--blanc); text-decoration: none;
+    font-family: var(--font-titre); font-size: 12px;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding: 12px 14px; border-radius: 12px;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .modal-carte .grille-liens a:hover { border-color: var(--jaune); background: var(--jaune-clair); }
+  .modal-carte .galerie {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px; margin-top: 18px;
+  }
+  .modal-carte .galerie .photo {
+    aspect-ratio: 1/1; border-radius: 10px;
+    background-size: cover; background-position: center;
+    background-color: var(--noir-pur);
+    border: 1px solid var(--glass-border);
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .modal-carte .galerie .photo:hover { border-color: var(--jaune); transform: scale(1.03); }
+
   /* Compte à rebours */
   .countdown-bloc {
     background: linear-gradient(135deg, rgba(247,209,53,0.10), rgba(247,209,53,0.02));
@@ -349,6 +502,9 @@
           <div class="ct-cell"><div class="num" id="ct-m">0</div><div class="lbl">min</div></div>
         </div>
       </div>
+
+      <!-- FEATURE : prochain show en grand (photo HD + bio) -->
+      <div id="feature-prochain"></div>
 
       <div class="agenda-liste" id="agenda-liste">
         <div class="agenda-vide">Chargement de l'agenda…</div>
@@ -422,6 +578,11 @@
   <div style="margin-top:14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris)">Sur la scène — pendant musical de Surnosmurs</div>
 </footer>
 
+<!-- Modal artiste -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="if(event.target===this)fermerModal()">
+  <div class="modal-carte" id="modal-carte" role="dialog" aria-modal="true"></div>
+</div>
+
 <script>
   async function chargerSVG(url, elementId) {
     try { const r = await fetch(url); document.getElementById(elementId).innerHTML = await r.text(); }
@@ -440,20 +601,75 @@
 
   const moisFr = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   const joursFr = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+  const BUCKET_URL = SUPABASE_URL + '/storage/v1/object/public/artistes-scene-epk/';
 
   function escaperHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escaperAttr(s) { return escaperHtml(s); }
+  function premiereLettre(nom) { return (nom || '?').trim().charAt(0).toUpperCase(); }
+
+  // Cache des concerts pour le modal
+  const showsCache = new Map();
 
   async function chargerAgenda() {
     const today = new Date().toISOString().slice(0,10);
     const { data, error } = await supa
       .from('concerts')
-      .select(`*, concerts_artistes(ordre, artistes_scene(nom_artiste, genre, titre_set, instagram, photo_artiste_path))`)
+      .select(`*, concerts_artistes(ordre, artistes_scene(id, nom_artiste, genre, titre_set, bio, instagram, facebook, site_web, spotify_url, bandcamp_url, soundcloud_url, youtube_url, vimeo_url, photo_artiste_path, photos_hd_paths, duree_set_minutes, nb_personnes_scene))`)
       .gte('date_show', today)
       .in('statut', ['planifie', 'confirme'])
       .order('date_show', { ascending: true })
-      .limit(20);
+      .limit(30);
     if (error) { console.error(error); return; }
+    showsCache.clear();
+    (data || []).forEach(s => showsCache.set(s.id, s));
+    renderFeature(data || []);
     renderAgenda(data || []);
+  }
+
+  function photoUrlOrNull(path) {
+    return path ? (BUCKET_URL + encodeURIComponent(path).replace(/%2F/g, '/')) : null;
+  }
+
+  function premierArtiste(show) {
+    const list = (show.concerts_artistes || []).slice().sort((a,b) => (a.ordre||0)-(b.ordre||0));
+    return list[0] && list[0].artistes_scene;
+  }
+
+  function renderFeature(shows) {
+    const bloc = document.getElementById('feature-prochain');
+    if (!shows || shows.length === 0) { bloc.innerHTML = ''; return; }
+    const s = shows[0];
+    const artiste = premierArtiste(s);
+    if (!artiste) { bloc.innerHTML = ''; return; }
+    const photoUrl = photoUrlOrNull(artiste.photo_artiste_path) || (artiste.photos_hd_paths && artiste.photos_hd_paths[0] && photoUrlOrNull(artiste.photos_hd_paths[0]));
+    const d = new Date(s.date_show + 'T' + (s.heure_debut || '19:30'));
+    const dateTxt = joursFr[d.getDay()] + ' ' + d.getDate() + ' ' + moisFr[d.getMonth()] + ' · ' + (s.heure_debut ? s.heure_debut.slice(0,5) : '19:30');
+
+    const liens = [];
+    if (artiste.spotify_url) liens.push(`<a href="${escaperAttr(artiste.spotify_url)}" target="_blank" rel="noopener">🎧 Spotify</a>`);
+    if (artiste.bandcamp_url) liens.push(`<a href="${escaperAttr(artiste.bandcamp_url)}" target="_blank" rel="noopener">💿 Bandcamp</a>`);
+    if (artiste.youtube_url) liens.push(`<a href="${escaperAttr(artiste.youtube_url)}" target="_blank" rel="noopener">📺 YouTube</a>`);
+    if (artiste.site_web) liens.push(`<a href="${escaperAttr(artiste.site_web)}" target="_blank" rel="noopener">🌐 Site</a>`);
+    if (artiste.instagram) {
+      const igUrl = artiste.instagram.startsWith('http') ? artiste.instagram : 'https://instagram.com/' + artiste.instagram.replace('@','');
+      liens.push(`<a href="${escaperAttr(igUrl)}" target="_blank" rel="noopener">📷 Instagram</a>`);
+    }
+
+    bloc.innerHTML = `
+      <article class="feature-artiste" onclick="ouvrirModal('${s.id}')">
+        ${photoUrl
+          ? `<div class="photo-hd" style="background-image:url('${escaperAttr(photoUrl)}')"></div>`
+          : `<div class="photo-hd placeholder">${escaperHtml(premiereLettre(artiste.nom_artiste))}</div>`}
+        <div class="infos">
+          <div class="surtitre-feat">Prochain show · ${escaperHtml(dateTxt)}</div>
+          <h3 class="titre-artiste">${escaperHtml(artiste.nom_artiste)}</h3>
+          ${artiste.genre ? `<div class="genre">${escaperHtml(artiste.genre)}${artiste.nb_personnes_scene ? ' · ' + artiste.nb_personnes_scene + ' sur scène' : ''}</div>` : ''}
+          <div class="when">📍 La Brassée · 2522 Beaubien Est · entrée libre · soundcheck <strong>18 h 30</strong> · show <strong>${s.heure_debut ? s.heure_debut.slice(0,5) : '19 h 30'}</strong></div>
+          ${artiste.bio ? `<div class="bio">${escaperHtml(artiste.bio)}</div>` : ''}
+          ${liens.length ? `<div class="liens-rapides">${liens.join('')}</div>` : ''}
+        </div>
+      </article>
+    `;
   }
 
   function renderAgenda(shows) {
@@ -462,43 +678,105 @@
       liste.innerHTML = `<div class="agenda-vide">L'agenda du moment se précise. Reviens bientôt — ou écris à Cédric pour proposer ta date.</div>`;
       return;
     }
-
-    // Compte à rebours sur le 1er show
     const first = shows[0];
     if (first) prepCountdown(first);
 
-    liste.innerHTML = shows.map(s => {
-      const d = new Date(s.date_show + 'T' + (s.heure_debut || '20:00'));
-      const jour = joursFr[d.getDay()];
-      const num = d.getDate();
-      const mois = moisFr[d.getMonth()];
-      const artistes = (s.concerts_artistes || []).map(ca => ca.artistes_scene && ca.artistes_scene.nom_artiste).filter(x => x);
-      const noms = artistes.length > 0 ? artistes.join(' · ') : 'À confirmer';
-      const genres = (s.concerts_artistes || []).map(ca => ca.artistes_scene && ca.artistes_scene.genre).filter(x => x);
-      const genreLine = genres.length > 0 ? genres.join(' · ') : (s.type_show || 'Concert').toUpperCase();
-      const heureDebut = s.heure_debut ? s.heure_debut.slice(0,5) : '20:00';
-      const heureFin = s.heure_fin ? s.heure_fin.slice(0,5) : '';
+    // Le feature affiche déjà le show #1. La liste affiche les suivants (1+).
+    const suivants = shows.slice(1);
+    if (suivants.length === 0) {
+      liste.innerHTML = `<div class="agenda-vide" style="margin-top:24px;color:var(--gris)">Rien d'autre planifié pour l'instant.</div>`;
+      return;
+    }
 
-      return `
-        <article class="show-carte">
-          <div class="date-bloc">
-            <div class="jour">${jour}</div>
-            <div class="jour-num">${num}</div>
-            <div class="mois">${mois}</div>
-          </div>
-          <div class="corps">
-            <div class="type">${escaperHtml(genreLine)}</div>
-            <h3>${escaperHtml(s.titre_show || noms)}</h3>
-            <div class="desc">${escaperHtml(s.description_publique || (artistes.length > 0 ? 'Avec ' + noms : 'Programmation à confirmer'))}</div>
-          </div>
-          <div class="heures">
-            <div class="h-prinicipal">${heureDebut}</div>
-            ${heureFin ? '<div style="opacity:0.6">→ ' + heureFin + '</div>' : ''}
-          </div>
-        </article>
-      `;
-    }).join('');
+    liste.innerHTML = `<div style="font-family:var(--font-titre);text-transform:uppercase;letter-spacing:4px;font-size:11px;color:var(--creme-fort);margin:32px 0 16px;text-align:center">Les shows suivants</div>` +
+      suivants.map(s => {
+        const d = new Date(s.date_show + 'T' + (s.heure_debut || '19:30'));
+        const jour = joursFr[d.getDay()];
+        const num = d.getDate();
+        const mois = moisFr[d.getMonth()];
+        const artiste = premierArtiste(s);
+        const nom = (artiste && artiste.nom_artiste) || 'À confirmer';
+        const genre = (artiste && artiste.genre) || (s.type_show || 'Concert').toUpperCase();
+        const heureDebut = s.heure_debut ? s.heure_debut.slice(0,5) : '19:30';
+        const heureFin = s.heure_fin ? s.heure_fin.slice(0,5) : '';
+        const photoUrl = artiste ? (photoUrlOrNull(artiste.photo_artiste_path) || (artiste.photos_hd_paths && artiste.photos_hd_paths[0] && photoUrlOrNull(artiste.photos_hd_paths[0]))) : null;
+        return `
+          <article class="show-carte" onclick="ouvrirModal('${s.id}')">
+            <div class="date-bloc">
+              <div class="jour">${jour}</div>
+              <div class="jour-num">${num}</div>
+              <div class="mois">${mois}</div>
+            </div>
+            ${photoUrl
+              ? `<div class="photo-mini" style="background-image:url('${escaperAttr(photoUrl)}')"></div>`
+              : `<div class="photo-mini placeholder">${escaperHtml(premiereLettre(nom))}</div>`}
+            <div class="corps">
+              <div class="type">${escaperHtml(genre)}</div>
+              <h3>${escaperHtml(s.titre_show || nom)}</h3>
+              <div class="desc">${escaperHtml(s.description_publique || (artiste ? (artiste.bio || ('Avec ' + nom)) : 'Programmation à confirmer')).slice(0,160)}${(artiste && artiste.bio && artiste.bio.length > 160) ? '…' : ''}</div>
+            </div>
+            <div class="heures">
+              <div class="h-prinicipal">${heureDebut}</div>
+              ${heureFin ? '<div style="opacity:0.6">→ ' + heureFin + '</div>' : ''}
+            </div>
+          </article>
+        `;
+      }).join('');
   }
+
+  // Modal artiste
+  function ouvrirModal(showId) {
+    const s = showsCache.get(showId);
+    if (!s) return;
+    const artiste = premierArtiste(s);
+    if (!artiste) return;
+    const photoUrl = photoUrlOrNull(artiste.photo_artiste_path) || (artiste.photos_hd_paths && artiste.photos_hd_paths[0] && photoUrlOrNull(artiste.photos_hd_paths[0]));
+    const d = new Date(s.date_show + 'T' + (s.heure_debut || '19:30'));
+    const dateLong = joursFr[d.getDay()] + ' ' + d.getDate() + ' ' + moisFr[d.getMonth()] + ' ' + d.getFullYear();
+
+    const liens = [];
+    if (artiste.spotify_url) liens.push(`<a href="${escaperAttr(artiste.spotify_url)}" target="_blank" rel="noopener">🎧 Écouter sur Spotify</a>`);
+    if (artiste.bandcamp_url) liens.push(`<a href="${escaperAttr(artiste.bandcamp_url)}" target="_blank" rel="noopener">💿 Bandcamp</a>`);
+    if (artiste.soundcloud_url) liens.push(`<a href="${escaperAttr(artiste.soundcloud_url)}" target="_blank" rel="noopener">🔊 SoundCloud</a>`);
+    if (artiste.youtube_url) liens.push(`<a href="${escaperAttr(artiste.youtube_url)}" target="_blank" rel="noopener">📺 YouTube</a>`);
+    if (artiste.vimeo_url) liens.push(`<a href="${escaperAttr(artiste.vimeo_url)}" target="_blank" rel="noopener">🎬 Vimeo</a>`);
+    if (artiste.site_web) liens.push(`<a href="${escaperAttr(artiste.site_web)}" target="_blank" rel="noopener">🌐 Site web</a>`);
+    if (artiste.instagram) {
+      const igUrl = artiste.instagram.startsWith('http') ? artiste.instagram : 'https://instagram.com/' + artiste.instagram.replace('@','');
+      liens.push(`<a href="${escaperAttr(igUrl)}" target="_blank" rel="noopener">📷 Instagram</a>`);
+    }
+    if (artiste.facebook) liens.push(`<a href="${escaperAttr(artiste.facebook)}" target="_blank" rel="noopener">👍 Facebook</a>`);
+
+    const galerie = (artiste.photos_hd_paths || []).slice(1, 13);
+
+    document.getElementById('modal-carte').innerHTML = `
+      <button class="ferme" onclick="fermerModal()" aria-label="Fermer">×</button>
+      ${photoUrl
+        ? `<div class="hero-modal" style="background-image:url('${escaperAttr(photoUrl)}')"></div>`
+        : `<div class="hero-modal" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-titre);color:var(--creme-fort);font-size:120px">${escaperHtml(premiereLettre(artiste.nom_artiste))}</div>`}
+      <div class="corps-modal">
+        <div class="meta">${escaperHtml(artiste.genre || s.type_show || 'Concert')}${artiste.nb_personnes_scene ? ' · ' + artiste.nb_personnes_scene + ' sur scène' : ''}</div>
+        <h3>${escaperHtml(artiste.nom_artiste)}</h3>
+        <div class="show-info">
+          📅 <strong>${escaperHtml(dateLong)}</strong> · soundcheck 18 h 30 · show ${s.heure_debut ? s.heure_debut.slice(0,5) : '19 h 30'}${s.heure_fin ? ' → ' + s.heure_fin.slice(0,5) : ''}
+          ${artiste.duree_set_minutes ? ` · set ${artiste.duree_set_minutes} min` : ''}
+        </div>
+        ${artiste.bio ? `<div class="bio">${escaperHtml(artiste.bio)}</div>` : `<div class="bio" style="font-style:italic;color:var(--gris)">Bio en cours d'écriture.</div>`}
+        ${liens.length ? `<div class="grille-liens">${liens.join('')}</div>` : ''}
+        ${galerie.length ? `<div style="font-family:var(--font-titre);text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--jaune);margin-top:18px;margin-bottom:10px">Photos</div>
+          <div class="galerie">${galerie.map(p => `<div class="photo" style="background-image:url('${escaperAttr(photoUrlOrNull(p))}')" onclick="window.open('${escaperAttr(photoUrlOrNull(p))}','_blank')"></div>`).join('')}</div>` : ''}
+      </div>
+    `;
+    document.getElementById('modal-backdrop').classList.add('actif');
+    document.body.style.overflow = 'hidden';
+  }
+  function fermerModal() {
+    document.getElementById('modal-backdrop').classList.remove('actif');
+    document.body.style.overflow = '';
+  }
+  window.ouvrirModal = ouvrirModal;
+  window.fermerModal = fermerModal;
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerModal(); });
 
   // Compte à rebours
   let cdTimer = null;
