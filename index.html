@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sur la scène — La Brassée</title>
+<meta name="description" content="L'agenda des concerts à La Brassée, le dossier technique et les conditions pour proposer une performance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --jaune: #f7d135;
+    --jaune-clair: rgba(247, 209, 53, 0.15);
+    --jaune-trame: rgba(247, 209, 53, 0.3);
+    --jaune-fort: rgba(247, 209, 53, 0.5);
+    --creme: rgba(205, 196, 157, 0.2);
+    --creme-fort: rgba(205, 196, 157, 0.6);
+    --sombre: #100f09;
+    --sombre-alt: #1f1c0f;
+    --noir-pur: #0a0905;
+    --blanc: #ffffff;
+    --blanc-doux: rgba(255, 255, 255, 0.85);
+    --gris: rgba(255, 255, 255, 0.55);
+
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+
+    --font-titre: 'Oswald', 'DIN Condensed', sans-serif;
+    --font-corps: 'Lato', 'Acumin Pro', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--sombre); }
+  body {
+    font-family: var(--font-corps); color: var(--blanc);
+    line-height: 1.6; font-size: 16px; font-weight: 300;
+    background:
+      radial-gradient(ellipse at 30% 10%, rgba(247, 209, 53, 0.12), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(247, 209, 53, 0.06), transparent 50%),
+      linear-gradient(to bottom, var(--sombre), var(--sombre-alt));
+    background-attachment: fixed;
+    min-height: 100vh; position: relative; overflow-x: hidden;
+  }
+
+  /* Spots de scène */
+  body::before, body::after {
+    content: ''; position: fixed; width: 60vmin; height: 100vmin;
+    pointer-events: none; z-index: 1;
+    background: radial-gradient(ellipse at center, rgba(247, 209, 53, 0.08), transparent 60%);
+    filter: blur(40px);
+  }
+  body::before { top: -20vmin; left: -10vmin; transform: rotate(-15deg); animation: spotA 14s ease-in-out infinite; }
+  body::after  { top: -20vmin; right: -10vmin; transform: rotate(15deg);  animation: spotB 18s ease-in-out infinite; }
+  @keyframes spotA { 0%,100% { opacity: 0.5; } 50% { opacity: 0.95; } }
+  @keyframes spotB { 0%,100% { opacity: 0.95; } 50% { opacity: 0.45; } }
+
+  .watermark {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(85vmin, 800px); height: min(85vmin, 800px);
+    pointer-events: none; z-index: 0; opacity: 0.05;
+    animation: respire 10s ease-in-out infinite;
+  }
+  .watermark svg { width: 100%; height: 100%; }
+  .watermark svg path { stroke: var(--jaune) !important; stroke-width: 1.2 !important; }
+  @keyframes respire {
+    0%,100% { opacity: 0.05; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.08; transform: translate(-50%, -50%) scale(1.02); }
+  }
+
+  header.brand, main, footer { position: relative; z-index: 2; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* HEADER sticky */
+  header.brand {
+    position: sticky; top: 0;
+    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: linear-gradient(180deg, rgba(16,15,9,0.85), rgba(16,15,9,0.6));
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 50;
+  }
+  header.brand .row {
+    max-width: 1100px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  header.brand .logo { width: 48px; height: 48px; flex-shrink: 0; }
+  header.brand .logo svg { width: 100%; height: 100%; }
+  header.brand .logo svg .st0, header.brand .logo svg path, header.brand .logo svg polygon { fill: var(--jaune) !important; }
+  header.brand .titres { display: flex; flex-direction: column; line-height: 1.1; }
+  header.brand .titres .h {
+    font-family: var(--font-titre); color: var(--jaune);
+    text-transform: uppercase; letter-spacing: 4px; font-size: 14px; font-weight: 400;
+  }
+  header.brand .titres .sh {
+    color: var(--creme-fort); font-family: var(--font-titre);
+    text-transform: uppercase; letter-spacing: 2px; font-size: 10px; margin-top: 3px;
+  }
+  header.brand nav { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+  header.brand nav a {
+    color: var(--blanc-doux); text-decoration: none;
+    font-family: var(--font-titre); text-transform: uppercase; letter-spacing: 2px;
+    font-size: 11px; padding: 8px 14px; border-radius: 999px;
+    border: 1px solid transparent; transition: all 0.2s ease;
+  }
+  header.brand nav a:hover { background: var(--jaune-clair); color: var(--jaune); border-color: var(--jaune-trame); }
+  header.brand nav a.cta { background: var(--jaune); color: var(--sombre); border-color: var(--jaune); }
+  header.brand nav a.cta:hover { background: transparent; color: var(--jaune); }
+
+  /* HERO */
+  .hero {
+    padding: 100px 24px 80px; text-align: center;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .hero .surtitre {
+    font-family: var(--font-titre);
+    color: var(--creme-fort); text-transform: uppercase;
+    letter-spacing: 6px; font-size: 12px; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: var(--font-titre); font-weight: 200;
+    font-size: clamp(54px, 11vw, 180px);
+    line-height: 0.95; letter-spacing: -2px;
+    color: var(--blanc); margin-bottom: 22px;
+  }
+  .hero h1 .accent { color: var(--jaune); }
+  .hero .pitch {
+    font-size: clamp(15px, 1.5vw, 18px); color: var(--blanc-doux);
+    max-width: 660px; margin: 0 auto 36px; line-height: 1.65;
+  }
+  .hero .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 3px; font-size: 13px; padding: 16px 32px;
+    border-radius: 999px; text-decoration: none;
+    transition: all 0.3s ease; border: 1px solid;
+  }
+  .btn.primaire { background: var(--jaune); color: var(--sombre); border-color: var(--jaune); box-shadow: 0 8px 24px rgba(247,209,53,0.18); }
+  .btn.primaire:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(247,209,53,0.35); }
+  .btn.secondaire { background: transparent; color: var(--jaune); border-color: var(--jaune-trame); }
+  .btn.secondaire:hover { background: var(--jaune-clair); border-color: var(--jaune); }
+
+  /* Sections génériques */
+  section { padding: 64px 0; position: relative; z-index: 2; }
+  section .label {
+    font-family: var(--font-titre); color: var(--jaune);
+    text-transform: uppercase; letter-spacing: 5px; font-size: 12px;
+    text-align: center; margin-bottom: 14px;
+  }
+  section h2 {
+    font-family: var(--font-titre); font-weight: 200;
+    font-size: clamp(32px, 5vw, 56px); letter-spacing: 1px;
+    text-align: center; margin-bottom: 12px; color: var(--blanc);
+  }
+  section h2 .underline { color: var(--jaune); }
+  section .intro {
+    text-align: center; color: var(--blanc-doux);
+    max-width: 640px; margin: 0 auto 48px; font-size: 16px;
+  }
+
+  /* AGENDA */
+  .agenda-liste { display: flex; flex-direction: column; gap: 18px; }
+  .agenda-vide {
+    text-align: center; padding: 60px 24px; color: var(--gris); font-style: italic;
+    border: 1px dashed var(--glass-border); border-radius: 16px;
+  }
+  .show-carte {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+    padding: 28px 32px; border-radius: 20px;
+    display: grid; grid-template-columns: 130px 1fr auto; gap: 26px; align-items: center;
+  }
+  @media (max-width: 700px) { .show-carte { grid-template-columns: 100px 1fr; gap: 16px; padding: 20px; } .show-carte .heures { grid-column: 1 / -1; } }
+  .show-carte .date-bloc {
+    text-align: center; padding: 14px;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--jaune-trame); border-radius: 14px;
+  }
+  .show-carte .jour {
+    font-family: var(--font-titre); text-transform: uppercase;
+    color: var(--creme-fort); font-size: 11px; letter-spacing: 2px;
+  }
+  .show-carte .jour-num {
+    font-family: var(--font-titre); font-size: 38px; font-weight: 400;
+    color: var(--jaune); line-height: 1; margin: 4px 0;
+  }
+  .show-carte .mois {
+    font-family: var(--font-titre); text-transform: uppercase;
+    font-size: 12px; letter-spacing: 2px; color: var(--blanc-doux);
+  }
+  .show-carte .corps h3 {
+    font-family: var(--font-titre); font-weight: 300;
+    font-size: clamp(22px, 3vw, 28px); letter-spacing: 1px;
+    color: var(--blanc); margin-bottom: 6px;
+  }
+  .show-carte .corps .type {
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 2px; font-size: 11px; color: var(--jaune); margin-bottom: 8px;
+  }
+  .show-carte .corps .desc { color: var(--blanc-doux); font-size: 14px; }
+  .show-carte .heures {
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 2px; font-size: 13px;
+    color: var(--blanc); text-align: right;
+  }
+  .show-carte .heures .h-prinicipal { color: var(--jaune); font-size: 18px; }
+
+  /* DOSSIER TECHNIQUE */
+  .dossier-bloc {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+    border-radius: 24px; padding: 36px;
+  }
+  .dossier-bloc .lead {
+    color: var(--blanc-doux); margin-bottom: 24px; font-size: 15px; line-height: 1.7;
+  }
+  details {
+    border-top: 1px solid var(--glass-border);
+    padding: 18px 0;
+  }
+  details:first-of-type { border-top: none; padding-top: 0; }
+  summary {
+    cursor: pointer; list-style: none;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 3px; font-size: 14px; color: var(--jaune);
+    padding: 4px 0; user-select: none;
+  }
+  summary::after { content: '+'; font-size: 24px; color: var(--jaune); transition: transform 0.2s; }
+  details[open] summary::after { content: '−'; }
+  summary::-webkit-details-marker { display: none; }
+  details .contenu {
+    margin-top: 14px; padding-left: 4px;
+    color: var(--blanc-doux); font-size: 14px; line-height: 1.7;
+  }
+  details .contenu ul { list-style: none; padding-left: 0; }
+  details .contenu li { padding: 4px 0; position: relative; padding-left: 18px; }
+  details .contenu li::before { content: '·'; color: var(--jaune); position: absolute; left: 6px; font-weight: 700; }
+  details .contenu .ph {
+    background: rgba(247,209,53,0.05); border-left: 3px solid var(--jaune-trame);
+    padding: 12px 16px; border-radius: 8px; color: var(--gris); font-style: italic;
+    margin: 8px 0;
+  }
+  .dossier-actions {
+    display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap;
+  }
+
+  /* CONDITIONS / proposer */
+  .cond-grille {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px; margin-bottom: 36px;
+  }
+  .cond-carte {
+    background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
+    padding: 22px; border-radius: 16px;
+    border-top: 3px solid var(--jaune);
+  }
+  .cond-carte .titre {
+    font-family: var(--font-titre); text-transform: uppercase;
+    letter-spacing: 2px; font-size: 13px; color: var(--jaune); margin-bottom: 10px;
+  }
+  .cond-carte .desc { color: var(--blanc-doux); font-size: 14px; line-height: 1.6; }
+
+  /* Footer */
+  footer.public {
+    text-align: center; padding: 56px 24px;
+    border-top: 1px solid var(--glass-border);
+    color: var(--gris); font-size: 13px;
+    background: rgba(10, 9, 5, 0.6); backdrop-filter: blur(20px);
+  }
+  footer.public .logo-svg-footer { width: 64px; height: 64px; margin: 0 auto 14px; }
+  footer.public .logo-svg-footer svg { width: 100%; height: 100%; }
+  footer.public .logo-svg-footer svg .st0, footer.public .logo-svg-footer svg path, footer.public .logo-svg-footer svg polygon { fill: var(--jaune) !important; }
+  footer.public .nom-marque {
+    font-family: var(--font-titre); color: var(--jaune);
+    font-size: 14px; letter-spacing: 3px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  footer.public a { color: var(--blanc-doux); text-decoration: none; transition: color 0.2s; }
+  footer.public a:hover { color: var(--jaune); }
+
+  /* Compte à rebours */
+  .countdown-bloc {
+    background: linear-gradient(135deg, rgba(247,209,53,0.10), rgba(247,209,53,0.02));
+    border: 1px solid var(--jaune-trame);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+    padding: 28px; border-radius: 20px; margin-bottom: 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  }
+  .countdown-bloc .gauche { flex: 1; min-width: 200px; }
+  .countdown-bloc .label-cd { font-family: var(--font-titre); text-transform: uppercase; letter-spacing: 4px; font-size: 11px; color: var(--creme-fort); margin-bottom: 6px; }
+  .countdown-bloc .titre-cd { font-family: var(--font-titre); font-size: clamp(22px, 3vw, 32px); color: var(--jaune); font-weight: 300; letter-spacing: 1px; }
+  .countdown-bloc .meta-cd { color: var(--blanc-doux); font-size: 14px; margin-top: 4px; }
+  .countdown-bloc .timer { display: flex; gap: 16px; }
+  .timer .ct-cell { text-align: center; min-width: 56px; }
+  .timer .num { font-family: var(--font-titre); font-size: 36px; color: var(--jaune); font-weight: 300; line-height: 1; }
+  .timer .lbl { font-family: var(--font-titre); text-transform: uppercase; font-size: 10px; letter-spacing: 2px; color: var(--gris); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="watermark" id="watermark"></div>
+
+<header class="brand">
+  <div class="row">
+    <div class="logo" id="logo-header"></div>
+    <div class="titres">
+      <div class="h">La Brassée</div>
+      <div class="sh">Sur la scène</div>
+    </div>
+    <nav>
+      <a href="#agenda">Agenda</a>
+      <a href="#dossier">Dossier technique</a>
+      <a href="#proposer" class="cta">Proposer une perfo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="surtitre">La Brassée · Sur la scène</div>
+    <h1>La <span class="accent">scène</span> est libre.</h1>
+    <p class="pitch">Cinq soirs par semaine, La Brassée ouvre sa scène à des artistes qui veulent jouer pour de vrai. Sans billetterie, sans cachet figé. La salle écoute, met au chapeau, et la maison ajoute 10 % sur les factures du soir — 100 % pour les artistes. Soundcheck 18 h 30, premier set 19 h 30.</p>
+    <div class="ctas">
+      <a href="#agenda" class="btn primaire">Voir le prochain show</a>
+      <a href="#proposer" class="btn secondaire">Proposer ma perfo</a>
+    </div>
+  </section>
+
+  <section id="agenda">
+    <div class="container">
+      <div class="label">Agenda</div>
+      <h2>Les <span class="underline">prochains shows</span></h2>
+      <p class="intro">Cinq concerts par semaine (lundi, mardi, jeudi, vendredi, samedi). Entrée libre. Public en participation volontaire.</p>
+
+      <div class="countdown-bloc" id="countdown-bloc" style="display:none">
+        <div class="gauche">
+          <div class="label-cd">Prochain show</div>
+          <div class="titre-cd" id="cd-titre">…</div>
+          <div class="meta-cd" id="cd-meta">…</div>
+        </div>
+        <div class="timer" id="timer">
+          <div class="ct-cell"><div class="num" id="ct-j">0</div><div class="lbl">jours</div></div>
+          <div class="ct-cell"><div class="num" id="ct-h">0</div><div class="lbl">h</div></div>
+          <div class="ct-cell"><div class="num" id="ct-m">0</div><div class="lbl">min</div></div>
+        </div>
+      </div>
+
+      <div class="agenda-liste" id="agenda-liste">
+        <div class="agenda-vide">Chargement de l'agenda…</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dossier">
+    <div class="container">
+      <div class="label">Pour les artistes</div>
+      <h2>Le <span class="underline">dossier technique</span></h2>
+      <p class="intro">Tout ce qu'on fournit côté scène, son, lumière. Consulte avant d'envoyer ton rider, ça t'évitera les surprises.</p>
+
+      <div class="dossier-bloc" id="dossier-bloc">
+        <div class="lead">…</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposer">
+    <div class="container">
+      <div class="label">Tu veux jouer chez nous ?</div>
+      <h2>Les <span class="underline">conditions</span></h2>
+      <p class="intro">On accepte des artistes en autonomie qui aiment l'intimité d'une salle ouverte. Pas besoin d'être connu, juste d'avoir un set rodé.</p>
+
+      <div class="cond-grille">
+        <div class="cond-carte">
+          <div class="titre">💸 Rémunération</div>
+          <div class="desc">Pas de billetterie. Le public donne ce qu'il veut. La Brassée ajoute 10 % sur les factures pendant le show — <strong style="color:var(--jaune)">100 % reversé aux artistes</strong>. Plus 30 $ de conso offerte/artiste, plafond 120 $/soirée.</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">🎤 Soundcheck + format</div>
+          <div class="desc">Soundcheck dès <strong style="color:var(--jaune)">18 h 30</strong> avec Cédric à la console. Show à <strong style="color:var(--jaune)">19 h 30</strong>. Format : <strong style="color:var(--jaune)">2 sets de 45 min</strong> avec pause de 15 min.</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">📅 Cadence</div>
+          <div class="desc">5 shows/semaine (lun, mar, jeu, ven, sam). Un artiste peut revenir <strong style="color:var(--jaune)">max 3 fois/an</strong> — on aime faire tourner.</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">🎥 Captation</div>
+          <div class="desc">Sur demande : <strong style="color:var(--jaune)">enregistrement audio + vidéo stéréo sur clé USB</strong> de ta prestation pour <strong style="color:var(--jaune)">40 $</strong>. Pratique pour ta promo. (Multipiste à venir avec l'upgrade de console.)</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">📷 Promo</div>
+          <div class="desc">On t'annonce sur Facebook (event créé dès réception de ta photo + descriptif), Instagram, newsletter, TV Cuisine. Réels FB+Insta pendant le show. Droit d'image pour la promo (et 6 mois après).</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">❌ Annulation</div>
+          <div class="desc">Préavis 7 jours minimum, sauf force majeure. Aucun dédommagement prévu — on reprogramme dès que possible.</div>
+        </div>
+        <div class="cond-carte">
+          <div class="titre">🛡️ Matériel</div>
+          <div class="desc">Tu es responsable de ton matos personnel. La Brassée fournit la sono + le piano numérique Kawai ES110. Batterie et amplis : artiste apporte.</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:36px">
+        <a href="mailto:contact@labrassee.cafe?subject=Proposition%20de%20performance%20-%20Sur%20la%20sc%C3%A8ne&amp;body=Salut%20%21%20Je%20voudrais%20proposer%20une%20performance%20%C3%A0%20La%20Brass%C3%A9e.%0A%0ANom%20artiste%20%2F%20groupe%20%3A%20%0AGenre%20%3A%20%0ANb%20de%20personnes%20sur%20sc%C3%A8ne%20%3A%20%0AP%C3%A9riode%20souhait%C3%A9e%20%3A%20%0ALien%20%C3%A9coute%20%28Spotify%2FBandcamp%2FYouTube%29%20%3A%20%0AUn%20mot%20sur%20toi%20%3A%20%0A%0AMerci%20%21" class="btn primaire">Écrire à Cédric</a>
+        <a href="#agenda" class="btn secondaire" style="margin-left:8px">Revoir l'agenda</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="public">
+  <div class="logo-svg-footer" id="logo-footer"></div>
+  <div class="nom-marque">LA BRASSÉE</div>
+  <div>Café · scène · galerie · Rosemont, Montréal</div>
+  <div style="margin-top:8px"><a href="https://labrassee.cafe">labrassee.cafe</a> · <a href="https://facebook.com/labrassee">Facebook</a> · <a href="https://www.instagram.com/labrassee">Instagram</a></div>
+  <div style="margin-top:14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris)">Sur la scène — pendant musical de Surnosmurs</div>
+</footer>
+
+<script>
+  async function chargerSVG(url, elementId) {
+    try { const r = await fetch(url); document.getElementById(elementId).innerHTML = await r.text(); }
+    catch(e) { console.error('SVG', e); }
+  }
+  chargerSVG('picto_outlined_white.svg', 'watermark');
+  chargerSVG('full_logo_white.svg', 'logo-header');
+  chargerSVG('full_logo_white.svg', 'logo-footer');
+</script>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://xjlpttrziisldlclhsth.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqbHB0dHJ6aWlzbGRsY2xoc3RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjkyODMsImV4cCI6MjA5MjA0NTI4M30.JpkTnJF1ZP08ybzFdM8fFUJOTiKYx8ltTe2nxiDPk24';
+  const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const moisFr = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  const joursFr = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+
+  function escaperHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  async function chargerAgenda() {
+    const today = new Date().toISOString().slice(0,10);
+    const { data, error } = await supa
+      .from('concerts')
+      .select(`*, concerts_artistes(ordre, artistes_scene(nom_artiste, genre, titre_set, instagram, photo_artiste_path))`)
+      .gte('date_show', today)
+      .in('statut', ['planifie', 'confirme'])
+      .order('date_show', { ascending: true })
+      .limit(20);
+    if (error) { console.error(error); return; }
+    renderAgenda(data || []);
+  }
+
+  function renderAgenda(shows) {
+    const liste = document.getElementById('agenda-liste');
+    if (!shows || shows.length === 0) {
+      liste.innerHTML = `<div class="agenda-vide">L'agenda du moment se précise. Reviens bientôt — ou écris à Cédric pour proposer ta date.</div>`;
+      return;
+    }
+
+    // Compte à rebours sur le 1er show
+    const first = shows[0];
+    if (first) prepCountdown(first);
+
+    liste.innerHTML = shows.map(s => {
+      const d = new Date(s.date_show + 'T' + (s.heure_debut || '20:00'));
+      const jour = joursFr[d.getDay()];
+      const num = d.getDate();
+      const mois = moisFr[d.getMonth()];
+      const artistes = (s.concerts_artistes || []).map(ca => ca.artistes_scene && ca.artistes_scene.nom_artiste).filter(x => x);
+      const noms = artistes.length > 0 ? artistes.join(' · ') : 'À confirmer';
+      const genres = (s.concerts_artistes || []).map(ca => ca.artistes_scene && ca.artistes_scene.genre).filter(x => x);
+      const genreLine = genres.length > 0 ? genres.join(' · ') : (s.type_show || 'Concert').toUpperCase();
+      const heureDebut = s.heure_debut ? s.heure_debut.slice(0,5) : '20:00';
+      const heureFin = s.heure_fin ? s.heure_fin.slice(0,5) : '';
+
+      return `
+        <article class="show-carte">
+          <div class="date-bloc">
+            <div class="jour">${jour}</div>
+            <div class="jour-num">${num}</div>
+            <div class="mois">${mois}</div>
+          </div>
+          <div class="corps">
+            <div class="type">${escaperHtml(genreLine)}</div>
+            <h3>${escaperHtml(s.titre_show || noms)}</h3>
+            <div class="desc">${escaperHtml(s.description_publique || (artistes.length > 0 ? 'Avec ' + noms : 'Programmation à confirmer'))}</div>
+          </div>
+          <div class="heures">
+            <div class="h-prinicipal">${heureDebut}</div>
+            ${heureFin ? '<div style="opacity:0.6">→ ' + heureFin + '</div>' : ''}
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  // Compte à rebours
+  let cdTimer = null;
+  function prepCountdown(show) {
+    const bloc = document.getElementById('countdown-bloc');
+    const d = new Date(show.date_show + 'T' + (show.heure_debut || '20:00'));
+    if (isNaN(d.getTime())) return;
+    const artistes = (show.concerts_artistes || []).map(ca => ca.artistes_scene && ca.artistes_scene.nom_artiste).filter(x => x);
+    document.getElementById('cd-titre').textContent = show.titre_show || (artistes.join(' · ') || 'Prochain show');
+    const jourTxt = joursFr[d.getDay()] + ' ' + d.getDate() + ' ' + moisFr[d.getMonth()];
+    document.getElementById('cd-meta').textContent = jourTxt + ' · ' + (show.heure_debut ? show.heure_debut.slice(0,5) : '20:00');
+    bloc.style.display = 'flex';
+
+    function tick() {
+      const now = new Date();
+      const diff = d - now;
+      if (diff <= 0) {
+        document.getElementById('ct-j').textContent = '0';
+        document.getElementById('ct-h').textContent = '0';
+        document.getElementById('ct-m').textContent = '0';
+        clearInterval(cdTimer);
+        return;
+      }
+      const j = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      document.getElementById('ct-j').textContent = j;
+      document.getElementById('ct-h').textContent = String(h).padStart(2,'0');
+      document.getElementById('ct-m').textContent = String(m).padStart(2,'0');
+    }
+    tick();
+    if (cdTimer) clearInterval(cdTimer);
+    cdTimer = setInterval(tick, 30000);
+  }
+
+  // Dossier technique
+  async function chargerDossier() {
+    const { data, error } = await supa.from('dossier_technique').select('*').order('cree_le', { ascending: false }).limit(1).maybeSingle();
+    if (error || !data) {
+      document.getElementById('dossier-bloc').innerHTML = `<div class="lead" style="color:var(--gris);font-style:italic">Dossier technique en cours de finalisation. Écris à <a href="mailto:contact@labrassee.cafe" style="color:var(--jaune)">contact@labrassee.cafe</a> pour la version PDF.</div>`;
+      return;
+    }
+    renderDossier(data);
+  }
+
+  function renderDossier(d) {
+    const bloc = document.getElementById('dossier-bloc');
+    const c = d.contenu || {};
+    const sections = [
+      { titre: '🎤 Sonorisation', cle: 'sonorisation', items: ['enceintes','console','micros_filaires','micros_hf','di','retours_scene_bains','in_ear','table_facade_regie'] },
+      { titre: '🎹 Backline', cle: 'backline', items: ['piano','batterie','ampli_basse','ampli_guitare'] },
+      { titre: '💡 Éclairage', cle: 'eclairage', items: ['nb_projecteurs','types','console_lumiere','operateur_fourni'] },
+      { titre: '📐 Espace scène', cle: 'espace', items: ['dimensions_lxlxh_cm','revetement','fond'] },
+      { titre: '⚡ Électricité', cle: 'electricite', items: ['nb_prises','amperage','phase'] },
+      { titre: '🚪 Loge / coulisse', cle: 'loge', items: ['disponible','eau','snack'] },
+      { titre: '👥 Personnel La Brassée', cle: 'personnel', items: ['inge_son_fourni','regie_lumiere'] },
+      { titre: '🚗 Accès', cle: 'acces', items: ['chargement_dechargement','parking','horaires_arrivee'] },
+      { titre: '🪑 Public', cle: 'public', items: ['capacite_max','places_assises_debout'] }
+    ];
+    const intro = d.en_brouillon
+      ? `<div class="lead" style="background:rgba(247,209,53,0.06);border-left:3px solid var(--jaune-trame);padding:14px 18px;border-radius:8px;font-style:italic">${escaperHtml(d.notes_publiques || 'Dossier technique en cours de finalisation. Écris-nous pour la version PDF complète.')}</div>`
+      : `<div class="lead">Version <strong style="color:var(--jaune)">${escaperHtml(d.version || '')}</strong> · mis à jour le ${new Date(d.maj_le).toLocaleDateString('fr-CA')}. Si tu as un besoin spécifique non couvert ci-dessous, écris-nous.</div>`;
+
+    bloc.innerHTML = intro + sections.map(s => {
+      const sub = c[s.cle] || {};
+      const liItems = s.items.map(it => {
+        const val = sub[it];
+        const label = it.replace(/_/g, ' ');
+        if (val === null || val === undefined || val === '') {
+          return `<li><strong style="color:var(--blanc);text-transform:capitalize">${label} :</strong> <span style="color:var(--gris);font-style:italic">à confirmer</span></li>`;
+        }
+        return `<li><strong style="color:var(--blanc);text-transform:capitalize">${label} :</strong> ${escaperHtml(String(val))}</li>`;
+      }).join('');
+      return `<details><summary>${s.titre}</summary><div class="contenu"><ul>${liItems}</ul></div></details>`;
+    }).join('') + (d.pdf_path ? `<div class="dossier-actions"><a class="btn primaire" href="${SUPABASE_URL}/storage/v1/object/public/artistes-scene-epk/${d.pdf_path}" target="_blank">Télécharger le PDF complet</a></div>` : '');
+  }
+
+  chargerAgenda();
+  chargerDossier();
+  // Refresh agenda toutes les 5 min
+  setInterval(chargerAgenda, 300000);
+</script>
+
+</body>
+</html>
