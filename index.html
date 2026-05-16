@@ -678,7 +678,7 @@
     const today = new Date().toISOString().slice(0,10);
     const { data, error } = await supa
       .from('concerts')
-      .select(`*, concerts_artistes(ordre, artistes_scene(id, nom_artiste, genre, titre_set, bio, instagram, facebook, site_web, spotify_url, bandcamp_url, soundcloud_url, youtube_url, vimeo_url, photo_artiste_path, photos_hd_paths, duree_set_minutes, nb_personnes_scene))`)
+      .select(`*, concerts_artistes(ordre, artistes_scene(id, nom_artiste, genre, titre_set, bio, instagram, facebook, site_web, spotify_url, bandcamp_url, soundcloud_url, youtube_url, vimeo_url, photo_artiste_path, photos_hd_paths, duree_set_minutes, nb_personnes_scene, permanence, recurrence_notes, heure_debut_speciale))`)
       .gte('date_show', today)
       .in('statut', ['planifie', 'confirme'])
       .order('date_show', { ascending: true })
@@ -728,7 +728,7 @@
           <div class="surtitre-feat">Prochain show · ${escaperHtml(dateTxt)}</div>
           <h3 class="titre-artiste">${escaperHtml(artiste.nom_artiste)}</h3>
           ${artiste.genre ? `<div class="genre">${escaperHtml(artiste.genre)}${artiste.nb_personnes_scene ? ' · ' + artiste.nb_personnes_scene + ' sur scène' : ''}</div>` : ''}
-          <div class="when">📍 La Brassée · 2522 Beaubien Est · entrée libre · soundcheck <strong>18 h 30</strong> · show <strong>${s.heure_debut ? s.heure_debut.slice(0,5) : '19 h 30'}</strong></div>
+          <div class="when">📍 La Brassée · 2522 Beaubien Est · entrée libre · show <strong>${s.heure_debut ? s.heure_debut.slice(0,5) : '19:30'}</strong>${s.heure_fin ? ' → ' + s.heure_fin.slice(0,5) : ''}${artiste.permanence ? ' · <span style="color:var(--jaune)">⭐ permanence</span>' : ''}</div>
           ${artiste.bio ? `<div class="bio">${escaperHtml(artiste.bio)}</div>` : ''}
           ${liens.length ? `<div class="liens-rapides">${liens.join('')}</div>` : ''}
         </div>
@@ -868,9 +868,10 @@
         <div class="meta">${escaperHtml(artiste.genre || s.type_show || 'Concert')}${artiste.nb_personnes_scene ? ' · ' + artiste.nb_personnes_scene + ' sur scène' : ''}</div>
         <h3>${escaperHtml(artiste.nom_artiste)}</h3>
         <div class="show-info">
-          📅 <strong>${escaperHtml(dateLong)}</strong> · soundcheck 18 h 30 · show ${s.heure_debut ? s.heure_debut.slice(0,5) : '19 h 30'}${s.heure_fin ? ' → ' + s.heure_fin.slice(0,5) : ''}
+          📅 <strong>${escaperHtml(dateLong)}</strong> · show ${s.heure_debut ? s.heure_debut.slice(0,5) : '19:30'}${s.heure_fin ? ' → ' + s.heure_fin.slice(0,5) : ''} · soundcheck ${s.heure_soundcheck ? s.heure_soundcheck.slice(0,5) : '1 h avant'}
           ${artiste.duree_set_minutes ? ` · set ${artiste.duree_set_minutes} min` : ''}
         </div>
+        ${artiste.permanence && artiste.recurrence_notes ? `<div style="background:rgba(247,209,53,0.08);border-left:3px solid var(--jaune);padding:12px 16px;border-radius:8px;margin-bottom:18px;color:var(--blanc-doux);font-size:13px"><strong style="color:var(--jaune);font-family:var(--font-titre);text-transform:uppercase;letter-spacing:2px;font-size:11px">⭐ Permanence La Brassée</strong><br>${escaperHtml(artiste.recurrence_notes)}</div>` : ''}
         ${artiste.bio ? `<div class="bio">${escaperHtml(artiste.bio)}</div>` : `<div class="bio" style="font-style:italic;color:var(--gris)">Bio en cours d'écriture.</div>`}
         ${liens.length ? `<div class="grille-liens">${liens.join('')}</div>` : ''}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
@@ -936,35 +937,70 @@
     renderDossier(data);
   }
 
+  // Métadonnées de présentation des sections (mappées sur les clés JSON v1.x)
+  const SECTION_META = {
+    sonorisation: { titre: '🎤 Sonorisation', ordre: 1 },
+    backline: { titre: '🎹 Backline', ordre: 2 },
+    eclairage: { titre: '💡 Éclairage', ordre: 3 },
+    video: { titre: '🎥 Vidéo · captation', ordre: 4 },
+    format_show: { titre: '⏰ Format du show', ordre: 5 },
+    service_enregistrement: { titre: '💿 Captation USB · service', ordre: 6 },
+    loge: { titre: '🚪 Loge · coulisse · hospitality', ordre: 7 },
+    personnel: { titre: '👥 Personnel La Brassée', ordre: 8 },
+    espace: { titre: '📐 Espace scène', ordre: 9 },
+    public: { titre: '🪑 Public · capacité', ordre: 10 },
+    acces: { titre: '🚗 Accès · stationnement', ordre: 11 },
+    electricite: { titre: '⚡ Électricité', ordre: 12 },
+    notes_operationnelles: { titre: '⚠️ Notes opérationnelles', ordre: 13 },
+    identite_etablissement: { titre: '🆔 Identité établissement', ordre: 14 }
+  };
+
+  function labelFromKey(k) {
+    return k
+      .replace(/_/g, ' ')
+      .replace(/^./, c => c.toUpperCase())
+      .replace(/\b(m2|m\b)/gi, m => m.toUpperCase());
+  }
+
+  function renderValeur(v) {
+    if (v === null || v === undefined || v === '') return '<span style="color:var(--gris);font-style:italic">à confirmer</span>';
+    if (typeof v === 'boolean') return v ? 'oui' : 'non';
+    if (typeof v === 'number') return String(v);
+    if (Array.isArray(v)) return v.map(x => escaperHtml(String(x))).join(', ');
+    return escaperHtml(String(v));
+  }
+
   function renderDossier(d) {
     const bloc = document.getElementById('dossier-bloc');
     const c = d.contenu || {};
-    const sections = [
-      { titre: '🎤 Sonorisation', cle: 'sonorisation', items: ['enceintes','console','micros_filaires','micros_hf','di','retours_scene_bains','in_ear','table_facade_regie'] },
-      { titre: '🎹 Backline', cle: 'backline', items: ['piano','batterie','ampli_basse','ampli_guitare'] },
-      { titre: '💡 Éclairage', cle: 'eclairage', items: ['nb_projecteurs','types','console_lumiere','operateur_fourni'] },
-      { titre: '📐 Espace scène', cle: 'espace', items: ['dimensions_lxlxh_cm','revetement','fond'] },
-      { titre: '⚡ Électricité', cle: 'electricite', items: ['nb_prises','amperage','phase'] },
-      { titre: '🚪 Loge / coulisse', cle: 'loge', items: ['disponible','eau','snack'] },
-      { titre: '👥 Personnel La Brassée', cle: 'personnel', items: ['inge_son_fourni','regie_lumiere'] },
-      { titre: '🚗 Accès', cle: 'acces', items: ['chargement_dechargement','parking','horaires_arrivee'] },
-      { titre: '🪑 Public', cle: 'public', items: ['capacite_max','places_assises_debout'] }
-    ];
+
+    // On utilise les clés réellement présentes dans le JSON, triées selon SECTION_META.ordre
+    const presentKeys = Object.keys(c);
+    presentKeys.sort((a, b) => {
+      const oa = SECTION_META[a] ? SECTION_META[a].ordre : 99;
+      const ob = SECTION_META[b] ? SECTION_META[b].ordre : 99;
+      return oa - ob;
+    });
+
     const intro = d.en_brouillon
       ? `<div class="lead" style="background:rgba(247,209,53,0.06);border-left:3px solid var(--jaune-trame);padding:14px 18px;border-radius:8px;font-style:italic">${escaperHtml(d.notes_publiques || 'Dossier technique en cours de finalisation. Écris-nous pour la version PDF complète.')}</div>`
       : `<div class="lead">Version <strong style="color:var(--jaune)">${escaperHtml(d.version || '')}</strong> · mis à jour le ${new Date(d.maj_le).toLocaleDateString('fr-CA')}. Si tu as un besoin spécifique non couvert ci-dessous, écris-nous.</div>`;
 
-    bloc.innerHTML = intro + sections.map(s => {
-      const sub = c[s.cle] || {};
-      const liItems = s.items.map(it => {
-        const val = sub[it];
-        const label = it.replace(/_/g, ' ');
-        if (val === null || val === undefined || val === '') {
-          return `<li><strong style="color:var(--blanc);text-transform:capitalize">${label} :</strong> <span style="color:var(--gris);font-style:italic">à confirmer</span></li>`;
-        }
-        return `<li><strong style="color:var(--blanc);text-transform:capitalize">${label} :</strong> ${escaperHtml(String(val))}</li>`;
-      }).join('');
-      return `<details><summary>${s.titre}</summary><div class="contenu"><ul>${liItems}</ul></div></details>`;
+    bloc.innerHTML = intro + presentKeys.map(cle => {
+      const meta = SECTION_META[cle] || { titre: '📄 ' + labelFromKey(cle), ordre: 99 };
+      const sub = c[cle];
+      let liItems = '';
+
+      if (typeof sub === 'object' && sub !== null && !Array.isArray(sub)) {
+        liItems = Object.entries(sub).map(([k, v]) =>
+          `<li><strong style="color:var(--blanc)">${escaperHtml(labelFromKey(k))} :</strong> ${renderValeur(v)}</li>`
+        ).join('');
+      } else {
+        liItems = `<li>${renderValeur(sub)}</li>`;
+      }
+      // Ouvrir par défaut les 3 sections les plus utiles aux artistes
+      const openByDefault = ['sonorisation','backline','format_show'].includes(cle) ? 'open' : '';
+      return `<details ${openByDefault}><summary>${meta.titre}</summary><div class="contenu"><ul>${liItems}</ul></div></details>`;
     }).join('') + (d.pdf_path ? `<div class="dossier-actions"><a class="btn primaire" href="${SUPABASE_URL}/storage/v1/object/public/artistes-scene-epk/${d.pdf_path}" target="_blank">Télécharger le PDF complet</a></div>` : '');
   }
 
