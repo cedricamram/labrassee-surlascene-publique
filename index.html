@@ -874,9 +874,11 @@
         ${artiste.permanence && artiste.recurrence_notes ? `<div style="background:rgba(247,209,53,0.08);border-left:3px solid var(--jaune);padding:12px 16px;border-radius:8px;margin-bottom:18px;color:var(--blanc-doux);font-size:13px"><strong style="color:var(--jaune);font-family:var(--font-titre);text-transform:uppercase;letter-spacing:2px;font-size:11px">⭐ Permanence La Brassée</strong><br>${escaperHtml(artiste.recurrence_notes)}</div>` : ''}
         ${artiste.bio ? `<div class="bio">${escaperHtml(artiste.bio)}</div>` : `<div class="bio" style="font-style:italic;color:var(--gris)">Bio en cours d'écriture.</div>`}
         ${liens.length ? `<div class="grille-liens">${liens.join('')}</div>` : ''}
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+        <div style="background:rgba(255,255,255,0.04);border:1px dashed var(--jaune-trame);padding:10px 14px;border-radius:10px;margin-top:8px;font-size:13px;color:var(--blanc-doux);text-align:center">
+          🪑 <strong style="color:var(--jaune)">Aucune réservation possible</strong> — premier arrivé, mieux placé. Arrive 30-45 min avant pour les meilleures places.
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
           <button onclick="telechargerIcs('${s.id}');event.stopPropagation()" style="background:var(--jaune);color:var(--sombre);border:none;font-family:var(--font-titre);text-transform:uppercase;letter-spacing:3px;font-size:12px;padding:12px 22px;border-radius:999px;cursor:pointer">📅 Ajouter à mon calendrier</button>
-          <a href="mailto:contact@labrassee.cafe?subject=R%C3%A9servation%20-%20${encodeURIComponent(artiste.nom_artiste)}%20%C2%B7%20${escaperAttr(s.date_show)}" style="background:transparent;color:var(--jaune);border:1px solid var(--jaune-trame);font-family:var(--font-titre);text-transform:uppercase;letter-spacing:3px;font-size:12px;padding:12px 22px;border-radius:999px;text-decoration:none">📩 Réserver une table</a>
         </div>
         ${galerie.length ? `<div style="font-family:var(--font-titre);text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--jaune);margin-top:22px;margin-bottom:10px">Photos</div>
           <div class="galerie">${galerie.map(p => `<div class="photo" style="background-image:url('${escaperAttr(photoUrlOrNull(p))}')" onclick="window.open('${escaperAttr(photoUrlOrNull(p))}','_blank')"></div>`).join('')}</div>` : ''}
